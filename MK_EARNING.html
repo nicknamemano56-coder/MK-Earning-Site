@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MK EARNING</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07111f;--card:#0d1b2e;--card2:#10243b;--line:#1c3551;
+  --text:#f5f8ff;--muted:#8fa6c1;--blue:#268cff;--gold:#f4c65b;
+  --red:#ff4d5d;--green:#20c878;--violet:#9b5cff;
+}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#050d18,#09192b);color:var(--text);min-height:100vh}
+.app{width:100%;max-width:480px;margin:auto;min-height:100vh;padding-bottom:82px}
+.header{padding:18px 16px 12px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#ffd66b,#b77916);display:grid;place-items:center;color:#08111e;font-weight:1000;font-size:17px;box-shadow:0 8px 25px #0006}
+.brand h1{font-size:20px;letter-spacing:.8px}.brand small{color:var(--muted);font-size:11px}
+.wallet{background:#0d2035;border:1px solid var(--line);padding:9px 12px;border-radius:14px;text-align:right}
+.wallet span{display:block;color:var(--muted);font-size:10px}.wallet b{font-size:14px;color:var(--gold)}
+.hero{margin:6px 14px 12px;padding:18px;border:1px solid #20456d;border-radius:22px;background:radial-gradient(circle at 90% 0,#143f6b 0,#0d2138 40%,#0b1829 100%);box-shadow:0 14px 35px #0004}
+.heroTop{display:flex;justify-content:space-between;align-items:center}
+.label{font-size:10px;color:#88a4c3;text-transform:uppercase;letter-spacing:1.3px}
+.period{font-size:16px;font-weight:800;margin-top:5px}
+.timer{font-size:28px;font-weight:900;color:#fff;letter-spacing:1px}
+.timer em{font-style:normal;color:#5bb2ff}
+.card{margin:12px 14px;background:rgba(13,27,46,.94);border:1px solid var(--line);border-radius:20px;padding:16px}
+.sectionTitle{font-size:13px;font-weight:800;margin-bottom:12px}.sectionTitle span{color:var(--muted);font-weight:500}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.choice{border:1px solid var(--line);background:#0a1727;color:#dce9f7;border-radius:13px;padding:12px 6px;font-weight:800;cursor:pointer;transition:.18s}
+.choice .dot{width:13px;height:13px;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:5px}
+.choice.active{border-color:#5bb2ff;background:#123352;box-shadow:0 0 0 1px #268cff44}
+.red .dot{background:var(--red)}.green .dot{background:var(--green)}.violet .dot{background:var(--violet)}
+.sizeGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.size{padding:13px;border-radius:13px;border:1px solid var(--line);background:#0a1727;color:#dce9f7;font-weight:900;cursor:pointer}
+.size.active{border-color:var(--gold);background:#302818;color:var(--gold)}
+.amount{display:flex;align-items:center;gap:10px}
+.step{width:45px;height:45px;border-radius:13px;border:1px solid var(--line);background:#0a1727;color:#fff;font-size:24px;cursor:pointer}
+.amountValue{flex:1;text-align:center;font-size:22px;font-weight:900}
+.quick{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:10px}
+.quick button{border:1px solid var(--line);background:#0a1727;color:#a9bfd7;padding:8px 3px;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer}
+.quick button.active{color:#fff;border-color:#268cff;background:#123352}
+.submit{width:100%;margin-top:15px;padding:14px;border:0;border-radius:14px;background:linear-gradient(135deg,#1683ff,#4ca8ff);color:#fff;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 10px 25px #1683ff30}
+.notice{text-align:center;color:var(--muted);font-size:10px;margin-top:8px}
+.history{display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:1.45fr .55fr .8fr .65fr;align-items:center;background:#091727;border:1px solid #142a42;border-radius:12px;padding:10px;font-size:11px}
+.row.head{background:transparent;border:0;color:#718aa6;font-size:9px;text-transform:uppercase}
+.badge{font-weight:900}.bRed{color:var(--red)}.bGreen{color:var(--green)}.bViolet{color:var(--violet)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);height:70px;background:#081525ee;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:5}
+.nav button{border:0;background:none;color:#6f88a4;font-size:10px;font-weight:700;cursor:pointer}.nav button.active{color:#55aaff}.nav .ico{font-size:20px;display:block;margin-bottom:3px}
+.toast{position:fixed;left:50%;bottom:88px;transform:translate(-50%,20px);opacity:0;background:#122943;border:1px solid #2a4e73;padding:11px 16px;border-radius:12px;font-size:12px;transition:.25s;z-index:20;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:481px){body{padding:0 12px}.app{box-shadow:0 0 70px #0006}}
+
+.historyWrap{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.historyWrap .card{min-width:0}
+.empty{padding:18px 8px;text-align:center;color:var(--muted);font-size:11px}
+.gameLauncher{background:linear-gradient(135deg,#0d2440,#0b1728);border-color:#24517d}
+@media(max-width:380px){.historyWrap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="logo">MK</div>
+      <div><h1>MK EARNING</h1><small>Wingo 30 Sec</small></div>
+    </div>
+    <div class="wallet"><span>POINTS</span><b id="balance">12,580</b></div>
+  </header>
+
+  <section class="hero">
+    <div class="heroTop">
+      <div><div class="label">Current Period</div><div class="period" id="period">—</div></div>
+      <div style="text-align:right"><div class="label">Time Remaining</div><div class="timer"><em id="sec">00</em>s</div></div>
+    </div>
+  </section>
+
+  <section class="card gameLauncher" id="wingoCard" style="cursor:pointer">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="label">GAME</div>
+        <div style="font-size:19px;font-weight:900;margin-top:4px">Wingo 30 Sec</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Live 30-second rounds</div>
+      </div>
+      <div style="width:50px;height:50px;border-radius:15px;background:linear-gradient(145deg,#1683ff,#1253a1);display:grid;place-items:center;font-size:25px;box-shadow:0 8px 20px #1683ff33">◉</div>
+    </div>
+    <button class="submit" style="margin-top:13px">OPEN GAME</button>
+  </section>
+
+  <section class="card" id="gameArea">
+    <div class="sectionTitle">Select Colour <span>• Optional</span></div>
+    <div class="grid3">
+      <button class="choice red" data-color="RED"><i class="dot"></i>RED</button>
+      <button class="choice green" data-color="GREEN"><i class="dot"></i>GREEN</button>
+      <button class="choice violet" data-color="VIOLET"><i class="dot"></i>VIOLET</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sectionTitle">Select Result <span>• Optional</span></div>
+    <div class="sizeGrid" style="grid-template-columns:repeat(3,1fr)">
+      <button class="size" data-size="BIG">BIG</button>
+      <button class="size" data-size="SMALL">SMALL</button>
+      <button class="size" data-size="TIE">TIE</button>
+    </div>
+    <div class="notice">Choose either a colour or a result — both are not compulsory.</div>
+  </section>
+
+  <section class="card">
+    <div class="sectionTitle">Points</div>
+    <div class="amount">
+      <button class="step" id="minus">−</button>
+      <div class="amountValue" id="amount">100</div>
+      <button class="step" id="plus">+</button>
+    </div>
+    <div class="quick">
+      <button data-amount="10">10</button><button data-amount="50">50</button>
+      <button data-amount="100" class="active">100</button><button data-amount="500">500</button>
+      <button data-amount="1000">1000</button>
+    </div>
+    <button class="submit" id="submit">SUBMIT</button>
+    <div class="notice">Select colour and size before submitting.</div>
+  </section>
+
+  <div class="historyWrap">
+    <section class="card historyCard">
+      <div class="sectionTitle">Result History</div>
+      <div class="history" id="history"></div>
+    </section>
+    <section class="card historyCard">
+      <div class="sectionTitle">Betting History</div>
+      <div class="history" id="betHistory">
+        <div class="empty">Your betting history will appear here.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="active"><span class="ico">⌂</span>Home</button>
+  <button><span class="ico">◉</span>Game</button>
+  <button><span class="ico">◷</span>History</button>
+  <button><span class="ico">◎</span>Profile</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+let selectedColor="",selectedSize="",amount=100,balance=12580,lastPeriod=null;
+const pad=n=>String(n).padStart(2,"0");
+
+function currentRound(){
+  const now=new Date();
+  const sec=now.getSeconds();
+  const remaining=29-sec;
+  const total=Math.floor(now.getTime()/30000);
+  return {remaining,total};
+}
+function updateClock(){
+  const r=currentRound();
+  $("#sec").textContent=pad(r.remaining);
+  const p=String(r.total);
+  if(lastPeriod!==p){
+    lastPeriod=p;
+    $("#period").textContent=p;
+    if($("#history").children.length===0) seedHistory(p);
+  }
+}
+function seedHistory(p){
+  const colors=["GREEN","RED","VIOLET","GREEN","RED"];
+  const sizes=["BIG","SMALL","BIG","BIG","SMALL"];
+  let html='<div class="row head"><span>Period</span><span>Colour</span><span>Result</span><span>Status</span></div>';
+  for(let i=1;i<=5;i++){
+    html+=`<div class="row"><span>${String(Number(p)-i)}</span><b class="badge ${colors[i-1]==="RED"?"bRed":colors[i-1]==="GREEN"?"bGreen":"bViolet"}">${colors[i-1]}</b><b>${sizes[i-1]}</b><b>Closed</b></div>`;
+  }
+  $("#history").innerHTML=html;
+}
+$$(".choice").forEach(b=>b.onclick=()=>{$$(".choice").forEach(x=>x.classList.remove("active"));b.classList.add("active");selectedColor=b.dataset.color});
+$$(".size").forEach(b=>b.onclick=()=>{$$(".size").forEach(x=>x.classList.remove("active"));b.classList.add("active");selectedSize=b.dataset.size});
+function setAmount(v){amount=Math.max(10,Math.min(10000,v));$("#amount").textContent=amount;$$(".quick button").forEach(x=>x.classList.toggle("active",+x.dataset.amount===amount))}
+$("#minus").onclick=()=>setAmount(amount-10);
+$("#plus").onclick=()=>setAmount(amount+10);
+$$(".quick button").forEach(b=>b.onclick=()=>setAmount(+b.dataset.amount));
+function toast(t){$("#toast").textContent=t;$("#toast").classList.add("show");setTimeout(()=>$("#toast").classList.remove("show"),1800)}
+$("#submit").onclick=()=>{
+  if(!selectedColor&&!selectedSize){toast("Select colour or result");return}
+  if(amount>balance){toast("Insufficient points");return}
+  balance-=amount;
+  $("#balance").textContent=balance.toLocaleString("en-IN");
+  const now=currentRound();
+  const target=selectedColor || selectedSize;
+  const type=selectedColor ? (selectedSize ? selectedColor+" + "+selectedSize : selectedColor) : selectedSize;
+  const bh=$("#betHistory");
+  if(bh.querySelector(".empty")) bh.innerHTML="";
+  const div=document.createElement("div");
+  div.className="row";
+  div.innerHTML=`<span>${String(now.total)}</span><b>${amount}</b><b class="badge ${selectedColor==="RED"?"bRed":selectedColor==="GREEN"?"bGreen":selectedColor==="VIOLET"?"bViolet":""}">${type}</b><b>Pending</b>`;
+  bh.insertBefore(div,bh.firstChild);
+  selectedColor="";selectedSize="";
+  $$(".choice,.size").forEach(x=>x.classList.remove("active"));
+  toast("Bet submitted");
+};
+
+$("#wingoCard").onclick=()=>$("#gameArea")?.scrollIntoView({behavior:"smooth",block:"start"});
+updateClock();setInterval(updateClock,250);
+</script>
+</body>
+</html>
