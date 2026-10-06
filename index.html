@@ -58,9 +58,71 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
 .empty{padding:18px 8px;text-align:center;color:var(--muted);font-size:11px}
 .gameLauncher{background:linear-gradient(135deg,#0d2440,#0b1728);border-color:#24517d}
 @media(max-width:380px){.historyWrap{grid-template-columns:1fr}}
+
+.authScreen{min-height:100vh;display:grid;place-items:center;padding:22px}
+.authBox{width:100%;max-width:430px;background:rgba(13,27,46,.97);border:1px solid #214361;border-radius:24px;padding:24px;box-shadow:0 20px 55px #0008}
+.authBrand{text-align:center;margin-bottom:22px}
+.authBrand .authLogo{width:58px;height:58px;border-radius:17px;margin:0 auto 10px;background:linear-gradient(145deg,#ffd66b,#b77916);display:grid;place-items:center;color:#08111e;font-weight:1000;font-size:22px}
+.authBrand h1{font-size:24px}.authBrand p{color:var(--muted);font-size:12px;margin-top:5px}
+.authTitle{font-size:18px;font-weight:900;margin-bottom:14px}
+.authInput{width:100%;height:48px;margin-top:9px;border:1px solid var(--line);background:#091727;color:#fff;border-radius:13px;padding:0 14px;outline:none;font-size:14px}
+.authInput:focus{border-color:#268cff}
+.authLabel{display:block;color:#9bb0c8;font-size:11px;font-weight:700;margin-top:12px}
+.rules{display:flex;gap:9px;align-items:flex-start;margin:14px 0;color:#9bb0c8;font-size:11px;line-height:1.5}
+.rules input{margin-top:2px;accent-color:#268cff;width:16px;height:16px}
+.rules a{color:#55aaff;text-decoration:none}
+.authSwitch{text-align:center;color:var(--muted);font-size:12px;margin-top:16px}
+.authSwitch button{border:0;background:none;color:#55aaff;font-weight:800;cursor:pointer}
+.authError{min-height:18px;color:#ff6d79;text-align:center;font-size:11px;margin-top:8px}
+.hidden{display:none!important}
+.logoutBtn{border:1px solid var(--line);background:#0a1727;color:#dce9f7;border-radius:10px;padding:7px 10px;font-size:10px;font-weight:800;cursor:pointer;margin-top:5px}
+
 </style>
 </head>
 <body>
+<div id="authScreen" class="authScreen">
+  <div class="authBox">
+    <div class="authBrand">
+      <div class="authLogo">MK</div>
+      <h1>MK EARNING</h1>
+      <p>Secure account access</p>
+    </div>
+
+    <div id="loginPanel">
+      <div class="authTitle">Login</div>
+      <label class="authLabel">Mobile Number</label>
+      <input id="loginMobile" class="authInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter mobile number">
+      <label class="authLabel">Password</label>
+      <input id="loginPassword" class="authInput" type="password" placeholder="Enter password">
+      <div id="loginError" class="authError"></div>
+      <button id="loginBtn" class="submit">LOGIN</button>
+      <div class="authSwitch">New user? <button id="showRegister">Create account</button></div>
+    </div>
+
+    <div id="registerPanel" class="hidden">
+      <div class="authTitle">Create Account</div>
+      <label class="authLabel">Name</label>
+      <input id="regName" class="authInput" type="text" maxlength="40" placeholder="Enter your name">
+      <label class="authLabel">Mobile Number</label>
+      <input id="regMobile" class="authInput" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+      <label class="authLabel">Password</label>
+      <input id="regPassword" class="authInput" type="password" placeholder="Create password">
+      <label class="authLabel">Confirm Password</label>
+      <input id="regConfirm" class="authInput" type="password" placeholder="Confirm password">
+
+      <label class="rules">
+        <input id="rulesCheck" type="checkbox">
+        <span>I agree to the <a href="#" onclick="return false">Terms &amp; Conditions</a> and <a href="#" onclick="return false">Privacy Policy</a>.</span>
+      </label>
+
+      <div id="registerError" class="authError"></div>
+      <button id="registerBtn" class="submit">REGISTER</button>
+      <div class="authSwitch">Already have an account? <button id="showLogin">Login</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="mainApp" class="hidden">
 <div class="app">
   <header class="header">
     <div class="brand">
@@ -121,7 +183,7 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       <button data-amount="1000">1000</button>
     </div>
     <button class="submit" id="submit">SUBMIT</button>
-    <div class="notice">Select colour and size before submitting.</div>
+    <div class="notice">Select colour or result before submitting.</div>
   </section>
 
   <div class="historyWrap">
@@ -142,11 +204,87 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   <button class="active"><span class="ico">⌂</span>Home</button>
   <button><span class="ico">◉</span>Game</button>
   <button><span class="ico">◷</span>History</button>
-  <button><span class="ico">◎</span>Profile</button>
+  <button id="profileBtn"><span class="ico">◎</span>Profile</button>
 </nav>
 <div class="toast" id="toast"></div>
+</div>
+</div>
 
 <script>
+
+const AUTH_KEY="mkEarningUsers";
+const SESSION_KEY="mkEarningSession";
+
+function getUsers(){
+  try{return JSON.parse(localStorage.getItem(AUTH_KEY)||"[]")}catch(e){return []}
+}
+function saveUsers(users){localStorage.setItem(AUTH_KEY,JSON.stringify(users))}
+function validMobile(v){return /^\d{10}$/.test(v)}
+function showAuth(mode){
+  $("#authScreen").classList.remove("hidden");
+  $("#mainApp").classList.add("hidden");
+  $("#loginPanel").classList.toggle("hidden",mode!=="login");
+  $("#registerPanel").classList.toggle("hidden",mode!=="register");
+  $("#loginError").textContent="";
+  $("#registerError").textContent="";
+}
+function showApp(){
+  $("#authScreen").classList.add("hidden");
+  $("#mainApp").classList.remove("hidden");
+}
+function startAuth(){
+  const session=localStorage.getItem(SESSION_KEY);
+  if(session && getUsers().some(u=>u.mobile===session)) showApp();
+  else {localStorage.removeItem(SESSION_KEY);showAuth("login")}
+}
+$("#showRegister").onclick=()=>showAuth("register");
+$("#showLogin").onclick=()=>showAuth("login");
+
+$("#registerBtn").onclick=()=>{
+  const name=$("#regName").value.trim();
+  const mobile=$("#regMobile").value.trim();
+  const pass=$("#regPassword").value;
+  const confirm=$("#regConfirm").value;
+  const err=$("#registerError");
+  if(!name){err.textContent="Enter your name";return}
+  if(!validMobile(mobile)){err.textContent="Enter a valid 10-digit mobile number";return}
+  if(pass.length<6){err.textContent="Password must be at least 6 characters";return}
+  if(pass!==confirm){err.textContent="Passwords do not match";return}
+  if(!$("#rulesCheck").checked){err.textContent="Please accept the Terms & Conditions";return}
+  const users=getUsers();
+  if(users.some(u=>u.mobile===mobile)){err.textContent="Account already exists. Please login.";return}
+  users.push({name,mobile,password:pass,acceptedRules:true,createdAt:new Date().toISOString()});
+  saveUsers(users);
+  $("#loginMobile").value=mobile;
+  $("#loginPassword").value="";
+  toast("Registration successful. Please login");
+  showAuth("login");
+};
+
+$("#loginBtn").onclick=()=>{
+  const mobile=$("#loginMobile").value.trim();
+  const pass=$("#loginPassword").value;
+  const user=getUsers().find(u=>u.mobile===mobile && u.password===pass);
+  if(!user){$("#loginError").textContent="Invalid mobile number or password";return}
+  localStorage.setItem(SESSION_KEY,mobile);
+  showApp();
+  toast("Login successful");
+};
+
+startAuth();
+$("#profileBtn").onclick=()=>{
+  const mobile=localStorage.getItem(SESSION_KEY);
+  const user=getUsers().find(u=>u.mobile===mobile);
+  if(user){
+    toast("Logged in as "+user.name);
+    setTimeout(()=>{
+      if(confirm("Logout from this account?")){
+        localStorage.removeItem(SESSION_KEY);
+        showAuth("login");
+      }
+    },250);
+  }
+};
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
 let selectedColor="",selectedSize="",amount=100,balance=12580,lastPeriod=null;
 const pad=n=>String(n).padStart(2,"0");
