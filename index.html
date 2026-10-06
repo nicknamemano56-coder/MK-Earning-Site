@@ -96,7 +96,7 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       <input id="loginPassword" class="authInput" type="password" placeholder="Enter password">
       <div id="loginError" class="authError"></div>
       <button id="loginBtn" class="submit">LOGIN</button>
-      <div class="authSwitch">New user? <button id="showRegister">Create account</button></div>
+      <div class="authSwitch">New user? <button type="button" id="showRegister" onclick="openRegister()">Create account</button></div>
     </div>
 
     <div id="registerPanel" class="hidden">
@@ -117,7 +117,7 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
 
       <div id="registerError" class="authError"></div>
       <button id="registerBtn" class="submit">REGISTER</button>
-      <div class="authSwitch">Already have an account? <button id="showLogin">Login</button></div>
+      <div class="authSwitch">Already have an account? <button type="button" id="showLogin" onclick="openLogin()">Login</button></div>
     </div>
   </div>
 </div>
@@ -237,8 +237,8 @@ function startAuth(){
   if(session && getUsers().some(u=>u.mobile===session)) showApp();
   else {localStorage.removeItem(SESSION_KEY);showAuth("login")}
 }
-$("#showRegister").onclick=()=>showAuth("register");
-$("#showLogin").onclick=()=>showAuth("login");
+function openRegister(){showAuth("register");}
+function openLogin(){showAuth("login");}
 
 $("#registerBtn").onclick=()=>{
   const name=$("#regName").value.trim();
@@ -271,7 +271,11 @@ $("#loginBtn").onclick=()=>{
   toast("Login successful");
 };
 
-startAuth();
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",startAuth);
+}else{
+  startAuth();
+}
 $("#profileBtn").onclick=()=>{
   const mobile=localStorage.getItem(SESSION_KEY);
   const user=getUsers().find(u=>u.mobile===mobile);
